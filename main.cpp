@@ -2,33 +2,59 @@
 #include <fstream>
 #include <ctime>
 #include <cstdlib>
-
+#include <sstream>
 
 int main() {
 
-    std::ofstream image;
-    image.open("image.ppm");
+    std::ifstream image;
+    std::ofstream newimage;
 
-    srand(time(0));
+    image.open("monument.ppm");
+    newimage.open("newimage.ppm");
 
-    if (image.is_open()) {
+    // copy over header information
 
-        image << "P3" << std::endl;
-        image << "250 250" << std::endl;
-        image << "255" << std::endl; 
+    std::string type = "", width = "", height="", RGB="";
+
+    image >> type;
+    image >> width;
+    image >> height;
+    image >> RGB;
+
+    newimage << type << std::endl;
+    newimage << width << " " << height << std::endl;
+    newimage << RGB << std::endl;
+
+    std::string red = "", green = "", blue = "";
+
+    int r = 0, g = 0, b = 0;
+
+    while(!image.eof()) {
+
+        image >> red;
+        image >> green;
+        image >> blue;
+
+        std::stringstream redstream(red);
+        std::stringstream greenstream(green);
+        std::stringstream bluestream(blue);
         
+        redstream >> r;
+        greenstream >> g;
+        bluestream >> b;
 
-        for (int y = 0; y < 250; y++) {
-
-            for (int x = 0; x < 250; x++) {
-
-                image << rand() % 255 << " " << rand() % 255 << " " << rand() % 255 << std::endl;
-
-            }
+        if (b+50 > 255) {
+            b = 255;
+        } else {
+            b += 50;
         }
+    
+        newimage << r << " " << g << " " << b << std::endl;
+    
     }
 
     image.close();
+    newimage.close();
 
     return 0;
 }
